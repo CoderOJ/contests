@@ -111,7 +111,7 @@ char ERR[] = "-1\n";
 
 void init() {
     scanf(II,&n,&k);
-    if (n*(n-1) < k) { 
+    if (n*(n-1)/2 < k) { 
         puts(ERR);
         exit(0); }
 }
