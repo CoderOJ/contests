@@ -29,6 +29,7 @@ bool valid(vector <string> a, vector <string> b) {
             mp[a[i]] = b[i]; }
         else {
             if (b[i] != mp[a[i]]) {
+                cout << "Error not one to one: " << a[i] << " to " << b[i] << " but " << mp[a[i]] << " exist.\n" ;
                 return 0; } } }
     return 1; }
 
