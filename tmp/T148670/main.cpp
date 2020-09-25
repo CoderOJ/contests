@@ -334,8 +334,9 @@ void init() {
 void solve() {
     rep (i,m) {
         int u=sc.nextInt(), v=sc.nextInt();
-        (u+=ans); (v-=ans); 
-        if (u>n) { u-=n; } if (v<1) { v+=n; }
+        (u+=ans); (v+=ans); 
+        if (u>n) { u-=n; } if (v>n) { v-=n; }
+        if (u==v) { cerr << "                                ERROR" << endl; }
         int pu = st.get(u), pv = st.get(v);
         if (pu == pv) {
             if (pans[pu] == -1) { goto nxt; }

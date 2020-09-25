@@ -62,7 +62,7 @@ def randGraphUCW(n,m,w):
     for i in range(m):
         print(b[i][0],b[i][1],get(w))
 
-n,m,c = 80000, 100000, 50610
+n,m,c = 50610, 100000, 50610
 print(n,m,c)
 e = []
 for i in range(2,n+1):
@@ -70,6 +70,6 @@ for i in range(2,n+1):
     e.append( [getlr(l,i-1),i] )
 for i in range(m-n+1):
     r = get(n-100) + 50
-    e.append( [getlr(r-10,r),r] )
+    e.append( [getlr(r-10,r-1),r] )
 for p in e:
     print(p[1],p[0])
