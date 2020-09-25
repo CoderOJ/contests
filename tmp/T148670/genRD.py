@@ -1,0 +1,78 @@
+# random with high depth: for 9,10,11,12,13,14
+
+import random 
+def get(u):
+    return random.randrange(u)+1
+def getlr(l,r):
+    return random.randrange(r-l+1)+l
+
+def randTree(n):
+    for i in range(2,n+1):
+        print(get(i-1),i)
+
+def randSeq(n,w):
+    for i in range(n):
+        print(get(w), end=' ')
+    print('')
+
+def randPerm(n):
+    a = [(i+1) for i in range(n)]
+    random.shuffle(a)
+    for i in a:
+        print(i,end=' ')
+    print('')
+
+def randGraphCUW(n,m):
+    b = []
+    for i in range(n-1):
+        b.append( [i+2,get(i+1)] )
+    for i in range(m-n+1):
+        u,v = get(n),get(n)
+        b.append( [u,v] )
+    random.shuffle(b)
+    for i in range(m):
+        print(b[i][0],b[i][1])
+
+def randGraphCW(n,m,w):
+    b = []
+    for i in range(n-1):
+        b.append( [i+2,get(i+1)] )
+    for i in range(m-n+1):
+        u,v = get(n),get(n)
+        b.append( [u,v] )
+    random.shuffle(b)
+    for i in range(m):
+        print(b[i][0],b[i][1],get(w))
+
+def randGraphUCUW(n,m):
+    b = []
+    for i in range(m):
+        u,v = get(n),get(n)
+        b.append( [u,v] )
+    random.shuffle(b)
+    for i in range(m):
+        print(b[i][0],b[i][1])
+
+def randGraphUCW(n,m,w):
+    b = []
+    for i in range(m):
+        u,v = get(n),get(n)
+        b.append( [u,v] )
+    random.shuffle(b)
+    for i in range(m):
+        print(b[i][0],b[i][1],get(w))
+
+n,m,c = 10, 100, 1
+print(n,m,c)
+e = []
+for i in range(2,n+1):
+    l = max(1,i-10)
+    e.append( [getlr(l,i-1),i] )
+for i in range(m-n+1):
+    u,v = get(n), get(n)
+    while(u==v):
+        u,v = get(n), get(n)
+    e.append( [u,v] )
+random.shuffle(e)
+for p in e:
+    print(p[0],p[1])
