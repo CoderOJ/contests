@@ -1,0 +1,7 @@
+The Resistance is trying to take control over as many planets of a particular solar system as possible. Princess Heidi is in charge of the fleet, and she must send ships to some planets in order to maximize the number of controlled planets.
+
+The Galaxy contains N N N planets, connected by bidirectional hyperspace tunnels in such a way that there is a unique path between every pair of the planets.
+
+A planet is controlled by the Resistance if there is a Resistance ship in its orbit, or if the planet lies on the shortest path between some two planets that have Resistance ships in their orbits.
+
+Heidi has not yet made up her mind as to how many ships to use. Therefore, she is asking you to compute, for every K=1,2,3,...,N K=1,2,3,...,N K=1,2,3,...,N , the maximum number of planets that can be controlled with a fleet consisting of K K K ships.
