@@ -1,0 +1,127 @@
+#include <iostream>
+#include <cstdio>
+#include <map>
+#include <set>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <queue>
+#include <cmath>
+#include <cstring>
+using namespace std;
+
+#ifdef __LOCALE__
+#define see(a) std::cout << #a << "=" << a << std::endl
+#else
+#define see(a) //std::cout << #a << "=" << a << std::endl
+#endif
+#define foreach(a,b) for (int a=0;a<(int)b.size();a++)
+#define rep(i,n) for (int i=0;i<n;i++)
+#define repa(i,n) for (int i=1;i<=n;i++)
+#define repi(i,a,b) for (int i=a;i<=b;i++) 
+typedef pair < int , int > pr;
+typedef pair < pr  , int > prr;
+#define L first
+#define R second
+
+const int N = 200005;
+const int E = 0x3f3f3f3f;
+struct FenwickTree {
+    int a[N];
+    const int n;
+    FenwickTree (int n) : n(n){
+        memset(a,0,sizeof(a));
+    }
+
+    inline int lowbit (int x) {
+        return x & (-x);
+    }
+
+    void modify (int pos , int x) {
+        pos++;
+        while (pos < n) {
+            a[pos] = max(a[pos] , x);
+            pos += lowbit(pos);
+        }
+    }
+
+    int query (int pos) {
+        pos++;
+        int res = a[1];
+        while (pos) {
+            res = max(res , a[pos]);
+            pos -= lowbit(pos);
+        }
+        return res;
+    }
+};
+
+int p[N] , l[N];
+int n;
+
+void scan(){
+    scanf("%d",&n);
+    rep (i,n) scanf("%d%d",&p[i],&l[i]);
+    p[n] = E;
+}
+
+const int B = 18;
+int r[N][B] , nc[N][B];
+void makeRNc() {
+    memset(r,E,sizeof(r));
+    memset(nc,E,sizeof(nc));
+    FenwickTree mxr(n + 5);
+    for (int i=n-1;i>=0;i--) {
+        r[i][0] = i;
+        int mri = upper_bound (p , p + n + 1, p[i] + l[i]) - p - 1;
+        r[i][0] = max(r[i][0] , mxr.query(mri));
+        mxr.modify (i , r[i][0]);
+    }
+    repa (b,B - 1) {
+        rep (i,n) if (r[i][b-1] != E && r[ r[i][b-1]+1 ][ b-1 ] != E) 
+                              r[i][b] = r[ r[i][b-1]+1 ][ b-1 ] ;
+    }
+
+    rep (i,n - 1) nc[i][0] = p[ r[i][0] + 1 ] - p[ r[i][0] ] - l[ r[i][0] ];
+    repa (b,B - 1) {
+        rep (i,n) if (r[i][b-1] != E && nc[i][b-1] != E && nc[ r[i][b-1]+1 ][ b-1 ] != E) 
+                            nc[i][b] =  nc[i][b-1] +       nc[ r[i][b-1]+1 ][ b-1 ] ;
+    }
+
+
+    /*debug info 
+    rep (i,B) { 
+        rep (j,n) printf("%12d ",r[j][i]);
+        puts("");
+    }
+    rep (i,B) { 
+        rep (j,n) printf("%12d ",nc[j][i]);
+        puts("");
+    }*/
+}
+
+void solve () {
+    int q;
+    scanf("%d",&q);
+    while (q--) {
+        int f , t;
+        scanf("%d%d",&f,&t);
+        f-- ; t--;
+        int pos = f;
+        int ans = 0;
+        for (int b=B - 1;b>=0;b--) {
+            if ( r[pos][b] == E || nc[pos][b] == E) continue;
+            if ( r[pos][b] >= t) continue;
+            ans += nc[pos][b];
+            pos +=  r[pos][b] + 1;
+        }
+        printf("%d\n",ans);
+    }
+}   
+
+int main(){
+    scan ();
+    makeRNc ();
+    solve ();
+    return 0;
+}
