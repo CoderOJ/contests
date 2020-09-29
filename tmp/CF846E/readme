@@ -1,0 +1,7 @@
+某学生要做实验，需要nnn种材料。
+
+第iii种材料需要aikga_ikgaikg，实验室里有bikgb_ikgbikg。
+
+已知一些材料可以互相转化。形式化的说，对于2≤i≤n2\le i\le n2≤i≤n，每kikgk_ikgkikg材料xi(1≤xi<i)x_i(1\le x_i<i)xi(1≤xi<i)可以转化为1kg1kg1kg材料iii，而每1kg1kg1kg材料iii能转化为1kg1kg1kg材料xix_ixi。材料间的转化数必须是整数。
+
+若经过任意转化能满足需求，输出"YES"，否则输出"NO"。
