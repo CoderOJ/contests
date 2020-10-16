@@ -1,5 +1,3 @@
-#pragma GCC optimize(2,3,"Ofast")
-#pragma GCC target("avx", "avx2")
 #include <iostream>
 #include <cstdio>
 using namespace std; 
@@ -112,7 +110,6 @@ init(); solve();
 // my code begins here
 
 const int N = 100005;
-const int M = 1200;
 int opt,n,q,w;
 
 struct STree {
@@ -120,7 +117,7 @@ struct STree {
         Node *l, *r; int v; 
         Node () { l=r=NULL; v=0; } };
 
-    static Node pool[N*22];
+    static Node pool[N*40];
     static int cnt;
     static Node* newNode() { return &pool[cnt++]; }
 
@@ -137,29 +134,26 @@ struct STree {
         int mid = (l+r)/2;
         if (p <= mid) { modify(l,mid,p,   f->l, u->l); }
         else          { modify(mid+1,r,p, f->r, u->r); } }
-    int query(int l, int r, int sl, int sr, Node* u, Node* v) {
-        if (sl <= l && r <= sr) { return v->v - u->v; }
+    int query(int l, int r, int sl, int sr, Node* u) {
+        if (sl <= l && r <= sr) { return u->v; }
         int mid = (l+r)/2, ans = 0;
-        if (sl <= mid) ans += query(l,mid,sl,sr,u->l,v->l); 
-        if (sr > mid) ans += query(mid+1,r,sl,sr,u->r,v->r); 
-        return move(ans); }
-}; STree::Node STree::pool[N*22]; int STree::cnt = 0;
+        if (sl <= mid) ans += query(l,mid,sl,sr,u->l); 
+        if (sr > mid) ans += query(mid+1,r,sl,sr,u->r); 
+        return ans; }
+}; STree::Node STree::pool[N*40]; int STree::cnt = 0;
 
 STree T;
-int pre[N][M+10];
 
 void preInit() { } 
 void init() {
     T.init(1,N,T.r[0]);
     n=sc.nextInt(); q=sc.nextInt(); opt=sc.nextInt(); w=sc.nextInt();
-    rep (i,n) { 
-        int u = sc.nextInt(); checkMin(u, N-2); 
-        rep (j,M) pre[i+1][j] = pre[i][j];
-        if (u < M-1) repi (j,u+1,M-1) { pre[i+1][j]++; }
-        T.modify(1,N,u, T.r[i], T.r[i+1]); } }
+    rep (i,n) { int u = sc.nextInt(); checkMin(u, N-2); T.modify(1,N,u, T.r[i], T.r[i+1]); } }
 
 void solve() {
+    cerr << "init pass" << endl;
     int lans = 0;
+    T.query(1,N,9,9,T.r[10]);
     while (q--) {
         int ul = sc.nextInt(), ur = sc.nextInt(), uw = sc.nextInt();
         if (opt == 1) { ul=(ul^lans)%n; ur=(ur^lans)%n; uw=(uw^lans)%w+1; }
@@ -168,8 +162,7 @@ void solve() {
         int l=1,r; lans=0;
         while (l<=uw) {
             r = uw/(uw/l);
-            if (r < M-1) { lans += (uw/l) * (pre[ur+1][r+1] - pre[ur+1][l] - pre[ul][r+1] + pre[ul][l]); }
-            else { lans += (uw/l) * T.query(1,N,l,r, T.r[ul], T.r[ur+1]); }
+            lans += (uw/l) * (T.query(1,N,l,r,T.r[ur+1]) - T.query(1,N,l,r,T.r[ul]));
             l = r+1; }
         printf(IN,lans); }
 }

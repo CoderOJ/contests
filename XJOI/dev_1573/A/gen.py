@@ -58,10 +58,11 @@ def randGraphUCW(n,m,w):
     for i in range(m):
         print(b[i][0],b[i][1],get(w))
 
-n,q = 100000,100000
-w,W = map(int, (1e5, 1e5))
-print(n,q,1,w)
-
-randSeq(n,W)
+n = 100000
+q = 100000
+w = 100000000
+print(n,q)
+randSeq(n,w)
+randTree(n)
 for i in range(q):
-    print(get(W), get(W), get(W))
+    print(get(n), get(w))

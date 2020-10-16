@@ -111,65 +111,39 @@ init(); solve();
 
 // my code begins here
 
+
 const int N = 100005;
-const int M = 1200;
-int opt,n,q,w;
-
-struct STree {
-    struct Node {
-        Node *l, *r; int v; 
-        Node () { l=r=NULL; v=0; } };
-
-    static Node pool[N*22];
-    static int cnt;
-    static Node* newNode() { return &pool[cnt++]; }
-
-    Node* r[N];
-    void init(int l, int r, Node* &u) {
-        u = newNode();
-        if (l == r) { return; }
-        int mid = (l+r)/2;
-        init(l,mid, u->l); init(mid+1,r, u->r); } 
-    void modify(int l, int r, int p, Node* f, Node* &u) {
-        u = newNode(); *u = *f; u->v++;
-        if (l == r) { return; }
-        u->l = f->l; u->r = f->r;
-        int mid = (l+r)/2;
-        if (p <= mid) { modify(l,mid,p,   f->l, u->l); }
-        else          { modify(mid+1,r,p, f->r, u->r); } }
-    int query(int l, int r, int sl, int sr, Node* u, Node* v) {
-        if (sl <= l && r <= sr) { return v->v - u->v; }
-        int mid = (l+r)/2, ans = 0;
-        if (sl <= mid) ans += query(l,mid,sl,sr,u->l,v->l); 
-        if (sr > mid) ans += query(mid+1,r,sl,sr,u->r,v->r); 
-        return move(ans); }
-}; STree::Node STree::pool[N*22]; int STree::cnt = 0;
-
-STree T;
-int pre[N][M+10];
+vector <int> e[N];
+int a[N];
+int n,q;
 
 void preInit() { } 
 void init() {
-    T.init(1,N,T.r[0]);
-    n=sc.nextInt(); q=sc.nextInt(); opt=sc.nextInt(); w=sc.nextInt();
-    rep (i,n) { 
-        int u = sc.nextInt(); checkMin(u, N-2); 
-        rep (j,M) pre[i+1][j] = pre[i][j];
-        if (u < M-1) repi (j,u+1,M-1) { pre[i+1][j]++; }
-        T.modify(1,N,u, T.r[i], T.r[i+1]); } }
+    n=sc.nextInt(); q=sc.nextInt();
+    repa (i,n) a[i] = sc.nextInt();
+    rep (i,n-1) { int u=sc.nextInt(),v=sc.nextInt(); e[u].push_back(v); e[v].push_back(u); }
+}
+
+long long ans;
+int fa[N];
+void dfs(int u, int f) {
+    fa[u] = f;
+    for (int v: e[u]) if(v!=f) {
+        ans += max(0, a[v]-a[u]); 
+        dfs(v,u); } }
+
+inline long long calc(int u) {
+    long long res = 0;
+    for (int v: e[u]) if (v!=fa[u]) {
+        res += max(0, a[v]-a[u]); }
+    return res; }
 
 void solve() {
-    int lans = 0;
+    ans = a[1]; dfs(1,0);
     while (q--) {
-        int ul = sc.nextInt(), ur = sc.nextInt(), uw = sc.nextInt();
-        if (opt == 1) { ul=(ul^lans)%n; ur=(ur^lans)%n; uw=(uw^lans)%w+1; }
-        else { ul--; ur--; }
-        if (ul > ur) { swap(ul,ur); }
-        int l=1,r; lans=0;
-        while (l<=uw) {
-            r = uw/(uw/l);
-            if (r < M-1) { lans += (uw/l) * (pre[ur+1][r+1] - pre[ur+1][l] - pre[ul][r+1] + pre[ul][l]); }
-            else { lans += (uw/l) * T.query(1,N,l,r, T.r[ul], T.r[ur+1]); }
-            l = r+1; }
-        printf(IN,lans); }
+        int u=sc.nextInt(), v=sc.nextInt();
+        ans -= max(0, a[u]-a[fa[u]]) + calc(u);
+        a[u] = v;
+        ans += max(0, a[u]-a[fa[u]]) + calc(u); 
+        printf("%lld\n",ans); }
 }
