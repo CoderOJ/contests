@@ -118,8 +118,8 @@ int up(int u, int d) {
 
 void preInit() { } void init() {
     n = sc.n();
-    rep (i,n-1) { int u=sc.n(), v=sc.n(); e[u].push_back(v); e[v].push_back(u); }
-    dfs0(1,0);
+    repa (i,n) { e[ sc.n() ].push_back(i); }
+    dfs0(0,0);
 }
 
 struct Vec {
@@ -127,15 +127,18 @@ struct Vec {
     int size() { return a.size(); }
     void pushFront(int u) { a.push_back(u); }
     int& operator [] (int id) { return a[size()-id-1]; }
-    void inherit(Vec B) { a = move(B.a); }
+    void inherit(Vec& B) { a = move(B.a); }
 };
 
 Vec dp[N];
 
 void dfs2(int u, int f) {
+    see(u,f,ls[u]);
     for (int v: e[u]) if (v!=f) { dfs2(v,u); }
     if (ls[u] != 0) { dp[u].inherit( dp[ls[u]] ); }
     for (int v: e[u]) if (v!=f && v!=ls[u]) {
+        see(u,v);
+        see(dp[u].size(), dp[v].size());
         rep (i, (int)dp[v].size()) { dp[u][i] += dp[v][i]; } }
     dp[u].pushFront(1);
     for (auto& q: qn[u]) {
@@ -144,13 +147,24 @@ void dfs2(int u, int f) {
 
 void solve() {
     q = sc.n();
-    int qnc = 0;
-    rep (i,q) { 
-        qs[i].u = sc.n(); qs[i].x = sc.n();
-        int lr = up( qs[i].u, qs[i].x-1 );
-        int r = fa[lr][0];
-        if (r == 0) { continue; }
-        qn[ r ].push_back( {qs[i].x  , qnc,0} ); qnc++;
-        qn[lr ].push_back( {qs[i].x-1, qnc,0} ); qnc++; }
-    dfs2(1,0);
+    {
+        int qnc = 0;
+        rep (i,q) { 
+            qs[i].u = sc.n(); qs[i].x = sc.n();
+            int r = up( qs[i].u, qs[i].x );
+            if (r == 0) { continue; }
+            qn[ r ].push_back( {qs[i].x  , qnc,0} ); qnc++; }
+    }
+    dfs2(0,0);
+    vector <Off> qq;
+    repa (i,n) for (auto& q: qn[i]) qq.push_back(q); 
+    sort(qq.begin(), qq.end(), [](Off a, Off b) { return a.id < b.id; } );
+    {
+        int qnc = 0;
+        rep (i,q) { 
+            int r = up( qs[i].u, qs[i].x );
+            if (r == 0) { printf("%d ", 0); continue; }
+            printf("%d ", qq[qnc].ans - 1);
+            qnc++; }
+    }
 }
