@@ -25,8 +25,6 @@ private:
   int add = 0;
 public:
   void pushAdd(int val) { add += val; }
-  void set(int id, int val) { 
-    std::map<int,int>::operator[](id) = val - add; }
   int operator[] (const int id) {
     return std::map<int,int>::operator[](id) + add; }
   void merge(Map& B) {
@@ -37,30 +35,62 @@ public:
 struct Dsu {
   Map a[N]; int p[N], sz[N];
   void init(int n) {
-    repa (i,n) { a[i].set(i,0); p[i]=i; sz[i]=1; } }
+    repa (i,n) { p[i]=i; sz[i]=1; } }
   int get(int u) { return u==p[u] ? u : p[u]=get(p[u]); }
   void merge(int u, int v) {
     int pu = get(u), pv = get(v);
     if (sz[pu] < sz[pv]) { std::swap(pu,pv); }
     p[pv]=pu; sz[pu]+=sz[pv]; a[pu].merge(a[pv]); }
   void add(int u, int v) { u = get(u); a[u].pushAdd(v); }
-  void set(int u, int v) { int pu = get(u); a[pu].set(u,v); }
   int at(int u) { return a[get(u)][u]; }
+} dsa;
+
+struct Info { int val, time; Info(int val=0, int time=0) : val(val), time(time) {} };
+class Map2 : std::map<int, Info> {
+private:
+  int val=0, time=0, cnt=1;
+public:
+  void pushVal(int _val) { time = cnt++; val = _val; }
+  void set(int u, int v) { std::map<int,Info>::operator[](u) = (Info){v, cnt++}; }
+  int at(int u) { auto v=std::map<int,Info>::operator[](u); return time>v.time ? val : v.val; }
+  void merge(Map2& B) { for (auto i: B) { set(i.first, B.at(i.first)); } }
 };
 
+struct Dsu2 {
+  Map2 a[N], time[N]; int p[N], sz[N];
+  void init(int n) { repa (i,n) { p[i]=i; sz[i]=1; time[i].set(i,0); a[i].set(i,0); } }
+  int get(int u) { return u==p[u] ? u : p[u]=get(p[u]); }
+  void merge(int u, int v) {
+    int pu = get(u), pv = get(v);
+    if (sz[pu] < sz[pv]) { std::swap(pu,pv); }
+    p[pv]=pu; sz[pu]+=sz[pv]; a[pu].merge(a[pv]); time[pu].merge(time[pv]); }
+  void upd(int u, int v, int t) { u=get(u); a[u].pushVal(v); time[u].pushVal(t); }
+  int atVal(int u) { return a[get(u)].at(u); }
+  int atTime(int u) { return time[get(u)].at(u); }
+} dsb;
+
+struct Query { int op, x, y; } qs[N];
+std::vector<int> queryTrigger[N];
 int n,m;
-Dsu a;
-std::set<int> b[N];
 
 void preInit() { } void init() {
   n = sc.n(); m = sc.n();
-  a.init(n); repa (i,n) b[i].insert(i);
+  rep (i,m) { 
+    qs[i].op = sc.n();
+    if (qs[i].op <= 4) { qs[i].x=sc.n(); qs[i].y=sc.n(); }
+    else { qs[i].x=sc.n(); } }
 } void solve() {
-  while (m--) {
-    int opt = sc.n();
-    if (opt == 1) { int x=sc.n(), y=sc.n(); a.merge(x,y); }
-    else if (opt == 2) { int x=sc.n(), y=sc.n(); for (int i: b[y]) { b[x].insert(i); } }
-    else if (opt == 3) { int x=sc.n(), t=sc.n(); a.add(x,t); }
-    else if (opt == 4) { int x=sc.n(), t=sc.n(); for (int i: b[x]) { a.set(i,t); } }
-    else { int x=sc.n(); printf("%lld\n", a.at(x)); } }
+  dsb.init(n);
+  rep (i,m) {
+    if (qs[i].op == 2) { dsb.merge(qs[i].x, qs[i].y); }
+    else if (qs[i].op == 4) { dsb.upd(qs[i].x, qs[i].y, i); }
+    else if (qs[i].op == 5) { int u=qs[i].x;
+      queryTrigger[dsb.atTime(u)].push_back(i); qs[i].y = dsb.atVal(u); } } 
+  dsa.init(n);
+  rep (i,m) {
+    for (int j: queryTrigger[i]) { qs[j].y -= dsa.at(qs[j].x); }
+    if (qs[i].op == 1) { dsa.merge( qs[i].x, qs[i].y ); }
+    else if (qs[i].op == 3) { dsa.add(qs[i].x, qs[i].y); }
+    else if (qs[i].op == 5) { qs[i].y += dsa.at(qs[i].x); printf("%lld\n", qs[i].y); } 
+  }
 }

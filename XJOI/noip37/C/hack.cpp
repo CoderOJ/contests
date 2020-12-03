@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 // PARSER: end local header '/home/jack/code/creats/gpl.h'
-
+ 
 // PARSER: begin local header '/home/jack/code/creats/Scanner.h'
-
+ 
 #ifndef SCANNER_H_
 #define SCANNER_H_ 1
 #include <stdio.h>
@@ -27,14 +27,14 @@ private:
   static const int BUFFER_SIZE = 10000;
   char buff[BUFFER_SIZE];
   int buffPos, buffLim;
-
+ 
 public:
   Scanner()
   {
     buffLim = fread(buff, 1, BUFFER_SIZE, stdin);
     buffPos = 0;
   }
-
+ 
 private:
   inline void flushBuff()
   {
@@ -206,9 +206,9 @@ Scanner sc;
 // PARSER: begin local header '/home/jack/code/creats/log.h'
 #ifndef LOG_H_
 #define LOG_H_ 1
-
+ 
 #include <iostream>
-
+ 
 #ifdef __LOCALE__
 template<typename T>
 void
@@ -239,7 +239,7 @@ __ses(T a, Args... b)
 #define ses(...)
 #define slog(format, ...)
 #endif
-
+ 
 template<class _Type>
 void
 logArray(_Type a[], int n)
@@ -248,25 +248,25 @@ logArray(_Type a[], int n)
     std::cout << a[i] << ' ';
   std::cout << std::endl;
 }
-
+ 
 #endif /* LOG_H_ */
 // PARSER: end local header '/home/jack/code/creats/log.h'
 // PARSER: begin local header '/home/jack/code/creats/loop.h'
 #ifndef LOOP_H_
 #define LOOP_H_ 1
-
+ 
 #define repe(a, b) for (int a = 0; a < (int)b.size(); a++)
 #define rep(i, n) for (int i = 0; i < n; i++)
 #define repa(i, n) for (int i = 1; i <= n; i++)
 #define repi(i, a, b) for (int i = a; i <= b; i++)
 #define repb(i, a, b) for (int i = a; i >= b; i--)
-
+ 
 #endif /* LOOP_H_ */
 // PARSER: end local header '/home/jack/code/creats/loop.h'
 // PARSER: begin local header '/home/jack/code/creats/base.h'
 #ifndef BASE_H_
 #define BASE_H_ 1
-
+ 
 template<class T>
 inline bool
 checkMin(T& a, T b)
@@ -279,7 +279,7 @@ checkMax(T& a, T b)
 {
   return (a < b ? a = b, 1 : 0);
 }
-
+ 
 #endif /* BASE_H_ */
 // PARSER: end local header '/home/jack/code/creats/base.h'
 // #include "/home/jack/code/creats/STree.h"
@@ -287,15 +287,15 @@ checkMax(T& a, T b)
 // #include "/home/jack/code/creats/Graph.h"
 // #include "/home/jack/code/creats/Intm.h"
 // #include "/home/jack/code/Math/Poly/main.h"
-
+ 
 #include <bits/stdc++.h>
-
+ 
 // #define MULTIPLE_TEST_CASES_WITH_T
 // #define MULTIPLE_TEST_CASES_WITHOUT_T
 // PARSER: begin local header '/home/jack/code/creats/body.h'
 #ifndef _BODY_MAIN
 #define _BODY_MAIN 1
-
+ 
 #ifndef CUSTOM_MAIN
 void
 preInit();
@@ -336,13 +336,13 @@ main()
   return 0;
 }
 #endif /* CUSTOM_MAIN */
-
+ 
 #endif /* _BODY_MAIN */
 // PARSER: end local header '/home/jack/code/creats/body.h'
 #define int long long
-
+ 
 /** My code begins here **/
-
+ 
 const int N = 500005;
 class Map : private std::map<int, int> {
 private:
@@ -355,7 +355,7 @@ public:
     for (auto i: B) {
       std::map<int,int>::operator[](i.first) = i.second + B.add - add; } }
 };
-
+ 
 struct Dsu {
   Map a[N]; int p[N], sz[N];
   void init(int n) {
@@ -368,7 +368,7 @@ struct Dsu {
   void add(int u, int v) { u = get(u); a[u].pushAdd(v); }
   int at(int u) { return a[get(u)][u]; }
 } dsa;
-
+ 
 struct Dsu2 {
   int p[N], val[N], time[N];
   void init(int n) {
@@ -378,14 +378,14 @@ struct Dsu2 {
     u = get(u); v = get(v); p[v] = u; }
   void set(int u, int v, int t) { u=get(u); val[u]=v; time[u]=t; }
 } dsb;
-
+ 
 struct Query { int op, x, y; } qs[N];
 std::vector<int> queryTrigger[N];
 int n,m;
-
+ 
 void preInit() { } void init() {
   n = sc.n(); m = sc.n();
-  rep (i,m) { 
+  rep (i,m) {
     qs[i].op = sc.n();
     if (qs[i].op <= 4) { qs[i].x=sc.n(); qs[i].y=sc.n(); }
     else { qs[i].x=sc.n(); } }
@@ -394,13 +394,13 @@ void preInit() { } void init() {
   rep (i,m) {
     if (qs[i].op == 2) { dsb.merge(qs[i].x, qs[i].y); }
     else if (qs[i].op == 4) { dsb.set( qs[i].x, qs[i].y, i ); }
-    else if (qs[i].op == 5) { int u=dsb.get(qs[i].x); 
-      queryTrigger[dsb.time[u]].push_back(i); qs[i].y = dsb.val[u]; } } 
+    else if (qs[i].op == 5) { int u=dsb.get(qs[i].x);
+      queryTrigger[dsb.time[u]].push_back(i); qs[i].y = dsb.val[u]; } }
   dsa.init(n);
   rep (i,m) {
     if (qs[i].op == 1) { dsa.merge( qs[i].x, qs[i].y ); }
     else if (qs[i].op == 3) { dsa.add(qs[i].x, qs[i].y); }
-    else if (qs[i].op == 5) { qs[i].y += dsa.at(qs[i].x); printf("%lld\n", qs[i].y); } 
+    else if (qs[i].op == 5) { qs[i].y += dsa.at(qs[i].x); printf("%lld\n", qs[i].y); }
     for (int j: queryTrigger[i]) { qs[j].y -= dsa.at(qs[j].x); }
   }
 }
