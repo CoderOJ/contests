@@ -12,3 +12,4 @@
 !readme
 **/jury.sh
 !/pretest/**/*
+pub.cpp
