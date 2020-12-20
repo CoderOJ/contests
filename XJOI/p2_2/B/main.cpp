@@ -1,50 +1,42 @@
-#include "/home/jack/code/creats/gpl.h"
-
-#include "/home/jack/code/creats/Scanner.h"
-#include "/home/jack/code/creats/log.h"
 #include "/home/jack/code/creats/loop.h"
-#include "/home/jack/code/creats/base.h"
-
 #include <bits/stdc++.h>
 
-// #define MULTIPLE_TEST_CASES_WITH_T
-// #define MULTIPLE_TEST_CASES_WITHOUT_T
-#include "/home/jack/code/creats/body.h"
-// #define int long long
-
-/** My code begins here **/
-
-constexpr int N = 200005;
-constexpr int M = 205;
+constexpr int N = 2e5 + 7;
+constexpr int C = 202;
 constexpr int MOD = 998244353;
+int n, m, q, f[N], las[N];
+int mata[N + C][C], dya[N + C][C];
+int matb[N + C][C], dyb[N + C][C];
 
-int a[N], n,m,q;
+int Fa(int t, int x, int y) {
+  if (x == m + 1) return mata[t][y];
+  else return (MOD - mata[dya[t][x]][y]) % MOD; }
 
-int calc(int a[], int n, int last) {
-  static int next[N][M];
-  rep (i,m) next[n][i] = n+1;
-  repb (i,n-1,0) {
-    memcpy(next[i], next[i+1], sizeof(next[i]));
-    next[i][a[i]] = i+1; }
-  static int ans[N];
-  memset(ans, 0, sizeof(ans));
-  rep (i,n) ans[i+1] = a[i]==last;
-  repb (i,n,0) { rep (j,m) (ans[i] += ans[ next[i][j] ]) %= MOD; }
-  return ans[0];
-}
+int Fb(int t, int x, int y) {
+  if (y == m + 1) return matb[t][x];
+  else return matb[dyb[t][y]][x]; }
 
-int qs[N];
-
-void preInit() { } void init() { 
-  n=sc.n(); m=sc.n(); q=sc.n();
-  rep (i,n) a[i] = sc.n()-1;
-} void solve() {
+int main() {
+  scanf("%d%d%d", &n, &m, &q);
+  if (q == 0)
+    return 0;
+  repi(i, 1, n) scanf("%d", &f[i]);
+  repi(i, 1, m) mata[i + n + 1][i] = MOD - 1, matb[i + n + 1][i] = 1, dya[n + 1][i] = dyb[0][i] = i + n + 1;
+  mata[n + 1][m + 1] = matb[0][m + 1] = 1;
+  repb (i, n, 1) {
+    repi(j, 1, m) {
+      if (f[i] != j) dya[i][j] = dya[i + 1][j];
+      else dya[i][j] = i + 1; }
+    repi(j, 1, m + 1) mata[i][j] = (2ll * Fa(i + 1, m + 1, j) % MOD + Fa(i + 1, f[i], j)) % MOD; }
+  repi(i, 1, n) {
+    repi(j, 1, m) {
+      if (f[i] != j) dyb[i][j] = dyb[i - 1][j];
+      else dyb[i][j] = i - 1; }
+    repi(j, 1, m + 1) matb[i][j] = (2ll * Fb(i - 1, j, m + 1) % MOD + MOD - Fb(i - 1, j, f[i])) % MOD; }
   while (q--) {
-    int b=sc.n()-1, c=sc.n()-1, d=sc.n()-1;
-    int qs_top = 0;
-    qs[qs_top++] = c;
-    repi (i,b+1,n-1) qs[qs_top++] = a[i];
-    rep (i,b) qs[qs_top++] = a[i];
-    printf("%d\n", calc(qs, n, d));
-  }
+    int a, b, c; scanf("%d%d%d", &a, &b, &c);
+    int res = 0;
+    repi(i, 1, m + 1) (res += 1ll * (2ll * Fa(a + 1, m + 1, i) % MOD + Fa(a + 1, b, i)) % MOD * Fb(a - 1, i, c) % MOD) %= MOD;
+    printf("%d\n", res); }
+  return 0;
 }
