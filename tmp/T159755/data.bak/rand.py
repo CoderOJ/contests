@@ -58,7 +58,7 @@ def randGraphUCW(n,m,w):
     for i in range(m):
         print(b[i][0],b[i][1],get(w))
 
-n = 500
+n = 100000
 print(n)
 for i in range(n):
     print(get(i+1), end = ' ')

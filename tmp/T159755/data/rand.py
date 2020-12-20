@@ -58,13 +58,7 @@ def randGraphUCW(n,m,w):
     for i in range(m):
         print(b[i][0],b[i][1],get(w))
 
-def randString(n, w):
-    for i in range(n):
-        print( chr( ord('a') + get(w) - 1 ) , end = '' )
-    print()
-
-n = 1000000
-m = 1000000
-w = 2
-randString(n,w)
-randString(m,w)
+n = 3000000
+print(n)
+for i in range(n):
+    print(get(i+1), end = ' ')

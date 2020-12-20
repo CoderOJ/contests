@@ -58,7 +58,11 @@ def randGraphUCW(n,m,w):
     for i in range(m):
         print(b[i][0],b[i][1],get(w))
 
-n = 500
+def getlr(l,r):
+    return random.randrange(l,r+1)
+
+n = 2000000
+w = 500
 print(n)
-for i in range(n):
-    print(get(i+1), end = ' ')
+for i in range(1,n+1):
+    print(getlr( max(1,i-w), i), end = ' ')

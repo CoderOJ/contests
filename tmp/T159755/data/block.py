@@ -58,7 +58,8 @@ def randGraphUCW(n,m,w):
     for i in range(m):
         print(b[i][0],b[i][1],get(w))
 
-n = 500
+n = 2999996
+block = 1555555
 print(n)
-for i in range(n):
-    print(get(i+1), end = ' ')
+for i in range(1,n+1):
+    print( max(i-block-get(3), 1) , end = ' ')
