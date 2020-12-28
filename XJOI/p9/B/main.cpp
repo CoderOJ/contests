@@ -21,28 +21,32 @@
 
 #define long long long
 constexpr int N = 3005;
-std::vector< std::pair<int,long> >e[N];
-std::vector<int> ava(1,0);
-int n, m, k;
+std::vector< std::pair<long,long> >e[N];
+std::vector<long> ava(1,0);
+long n, m, k;
 
 long dis[N];
 long sp(long red) {
-  std::priority_queue<std::pair<long,int>, std::vector<std::pair<long,int>>, std::greater<std::pair<long,int>>> que;
+  std::priority_queue<std::pair<long,long>, std::vector<std::pair<long,long>>, std::greater<std::pair<long,long>>> que;
   memset(dis, 0x3f, sizeof(dis)); dis[1] = 0; que.push(std::make_pair(0, 1));
   while (!que.empty()) {
-    int u = que.top().first; long uw = que.top().second; que.pop();
+    long u = que.top().second; long uw = que.top().first; que.pop();
     if (uw != dis[u]) { continue; }
     for (auto p: e[u]) {
-      int v = p.first; long w = std::max(0LL, p.second - red);
+      long v = p.first; long w = std::max(0LL, p.second - red);
       if (checkMin(dis[v], uw+w)) {
         que.push(std::make_pair(dis[v], v)); } } }
   return dis[n]; }
 
 void preInit() { } void init() {
-  n = sc.n(); m = sc.n(); k = sc.n();
-  rep (i,n) {
-    int u=sc.n(), v=sc.n(), w=sc.n();
+  n = sc.nextInt(); m = sc.nextInt(); k = sc.nextInt();
+  rep (i,m) {
+    long u=sc.nextInt(), v=sc.nextInt(), w=sc.nextInt();
+    ava.push_back(w);
     e[u].push_back( std::make_pair(v,w) );
     e[v].push_back( std::make_pair(u,w) ); }
 } void solve() {
+  long ans = std::numeric_limits<long>::max();
+  for (long kth: ava) { checkMin(ans, sp(kth) + k * kth); }
+  printf("%lld\n", ans);
 }

@@ -58,4 +58,8 @@ def randGraphUCW(n,m,w):
     for i in range(m):
         print(b[i][0],b[i][1],get(w))
 
-
+n = 3
+m = 4
+k = 1
+print(n, m, k)
+randGraphCW(n,m, 2)
