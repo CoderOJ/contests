@@ -44,7 +44,7 @@ bool _query(Node *&u, int sl, int sr, int l, int r) {
   int mid = (l + r) / 2;
   if (sl > mid) { return _query(u->r, sl, sr, mid+1, r); }
   else if (sr <= mid) { return _query(u->l, sl, sr, l, mid); }
-  else { return _query(u->l, sl, sr, l, mid) | _query(u->r, sl, sr, mid+1, r); } }
+  else { return _query(u->l, sl, sr, l, mid) || _query(u->r, sl, sr, mid+1, r); } }
 
 void init(int _g_n) { g_n = _g_n; }
 void modify(Node *&u, int p) { _modify(u,0,g_n,p); }
