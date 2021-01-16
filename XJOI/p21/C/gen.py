@@ -63,3 +63,8 @@ def randChar(c):
 
 def randString(n, c):
     return ''.join([randChar(c) for i in range(n)])
+
+n = 15
+k = 8
+print(n, k)
+randTree(n)
