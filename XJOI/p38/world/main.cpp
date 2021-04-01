@@ -20,51 +20,16 @@
 
 /** My code begins here **/
 
-constexpr int N = 50;
-constexpr int M = N * N;
-
-typedef std::bitset<M> Bits;
-int n, m, k;
-Bits a,b;
-
-struct LinearBasis {
-  Bits w[M];
-  void insert(Bits x) {
-    for (int i=0;i<k;++i) {
-      if (x[i]) {
-        if (w[i].any()) { x ^= w[i]; }
-        else { w[i] = std::move(x); break; } } } }
-  bool check(Bits x) {
-    for (int i=0;i<k;++i) {
-      if (x[i]) {
-        if (w[i].any()) { x ^= w[i]; }
-        else { return false; } } }
-    return true; }
-} lb;
+constexpr int N = 1005;
+int a[N][N], n, m;
 
 void preInit() { } void init() {
-  lb = LinearBasis();
-  n = sc.n(); m = sc.n(); k = n * m;
-  rep (i,n) rep (j,m) a[i*m + j] = sc.nextChar() == '1';
-  rep (i,n) rep (j,m) b[i*m + j] = sc.nextChar() == '1';
+  n = sc.n(); m = sc.n();  
+  rep (i,n) rep (j,m) a[i][j] = sc.nextChar() == '1';
+  rep (i,n) rep (j,m) a[i][j] ^= sc.nextChar() == '1';
 } void solve() {
-  rep (i,n) {
-    Bits x; rep (j,m) x[i*m + j] = 1;
-    lb.insert(x); }
-
-  rep (j,m) {
-    Bits x; rep (i,n) x[i*m + j] = 1;
-    lb.insert(x); }
-
-  for (int sum=0; sum<n+m-1; ++sum) {
-    Bits x; 
-    rep (i,n) rep (j,m) if (i+j==sum) { x[i*m + j] = 1; }
-    lb.insert(x); }
-
-  for (int del=-m+1; del<n; ++del) {
-    Bits x; 
-    rep (i,n) rep (j,m) if (i-j==del) { x[i*m + j] = 1; }
-    lb.insert(x); }
-
-  puts(lb.check(a ^ b) ? "Yes" : "No");
+  rep (i,n - 3) rep (j,m - 3) {
+    int tmp = a[i+1][j] ^ a[i+2][j] ^ a[i][j+1] ^ a[i][j+2] ^ a[i+3][j+1] ^ a[i+3][j+2] ^ a[i+1][j+3] ^ a[i+2][j+3];
+    if (tmp == 1) { puts("No"); return; } }
+  puts("Yes");
 }
