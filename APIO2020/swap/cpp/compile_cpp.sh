@@ -2,4 +2,4 @@
 
 problem=swap
 
-g++ -std=c++11 -o "${problem}" "grader.cpp" "${problem}.cpp" -O2 -lm
+clang++ -std=c++17 -o "${problem}" "grader.cpp" "${problem}.cpp" -g -fsanitize=address,undefined  -Wall -Wextra 
