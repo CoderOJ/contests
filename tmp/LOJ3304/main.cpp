@@ -75,6 +75,7 @@ struct Matrix {
         if (p.b != 0) { valid_id = j; break; } }
 
       if (!have_none_zero) { return Poly(); }
+      if (valid_id != i) { ans.a = MOD-ans.a; ans.b = MOD-ans.b; }
       for (int j=i; j<n; ++j) { std::swap(a[i][j], a[valid_id][j]); }
       ans = ans * a[i][i];
       if (ans.a==0 && ans.b==0) { return ans; }
