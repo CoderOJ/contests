@@ -4,22 +4,22 @@
 #define LOG_N 50
 
 long long imuladdmodq(long long bx, long long by, long long ax, long long ay, long long mod)
-/* { */
-/*     long long a_lb, a_hb; */
-/*     __asm__ ("imulq   %3" : "=a"(a_lb), "=d"(a_hb) : "a"(ax), "X"(ay)); */
-/*     long long b_lb, b_hb; */
-/*     __asm__ ("imulq   %3" : "=a"(b_lb), "=d"(b_hb) : "a"(bx), "X"(by)); */
-/*     __asm__ ("addq    %2, %0\n\t" */
-/*              "adcq    %3, %1"  */
-/*              : "+a"(b_lb), "+d"(b_hb)  */
-/*              : "r"(a_lb), "r"(a_hb) ); */
-/*     long long quotient, remain; */
-/*     __asm__ ("idivq    %4" : "=a"(quotient), "=d"(remain) : "a"(b_lb), "d"(b_hb), "X"(mod)); */
-/*     return remain; */
-/* } */
 {
-  return (long long)(((__int128_t)(ax) * ay + (__int128_t)(bx) * by) % mod);
+  long long a_lb, a_hb;
+  __asm__ ("imulq   %3" : "=a"(a_lb), "=d"(a_hb) : "a"(ax), "X"(ay));
+  long long b_lb, b_hb;
+  __asm__ ("imulq   %3" : "=a"(b_lb), "=d"(b_hb) : "a"(bx), "X"(by));
+  __asm__ ("addq    %2, %0\n\t"
+           "adcq    %3, %1" 
+           : "+a"(b_lb), "+d"(b_hb) 
+           : "r"(a_lb), "r"(a_hb) );
+  long long quotient, remain;
+  __asm__ ("idivq    %4" : "=a"(quotient), "=d"(remain) : "a"(b_lb), "d"(b_hb), "X"(mod));
+  return remain;
 }
+/* { */
+/*   return (long long)(((__int128_t)(ax) * ay + (__int128_t)(bx) * by) % mod); */
+/* } */
 
 struct matrix_t
 {
