@@ -1,0 +1,5 @@
+base = int(input())
+a, b = input().split()
+a = int(a, base)
+b = int(b, base)
+print(a * b)
