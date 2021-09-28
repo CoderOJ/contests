@@ -1,0 +1,6 @@
+(define a (read))
+(define b (read))
+(define c (read))
+(define k (read))
+(display (if (= 0 (modulo k 2)) (- a b) (- b a)))
+(newline)
