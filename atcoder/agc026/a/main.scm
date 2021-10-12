@@ -1,0 +1,6 @@
+(define n (read))
+(write (let loop ((i 0) (p -1) (l 1) (ans 0))
+         (if (= i n) (+ ans (quotient l 2))
+           (let ((a (read)))
+             (if (= a p) (loop (+ i 1) p (+ l 1) ans)
+               (loop (+ i 1) a 1 (+ ans (quotient l 2))))))))
