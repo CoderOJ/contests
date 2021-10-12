@@ -1,5 +1,5 @@
-# cts
+# contests
 
 #### Description
-My Contest Record 
-CodeForces/ATcoder/VJudge/XJoi/etc
+My contest record on
+CodeForces/ATcoder/VJudge/XJOI/etc
