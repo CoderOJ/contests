@@ -1,0 +1,8 @@
+(define n (read))
+(let loop ((i 0))
+  (when (< i n)
+    (let ((a (read)))
+      (let ((b (read)))
+        (display (expt-mod a b 1000000007))
+        (newline)))
+    (loop (+ i 1))))

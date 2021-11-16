@@ -1,0 +1,7 @@
+(define n (read))
+(define mod 1000000007)
+(define a1 (expt-mod 2 (* n n) mod))
+(define a2 (expt-mod 2 (quotient (+ (* n n) 1) 2) mod))
+(define a3 (expt-mod 2 (quotient (+ (* n n) 3) 4) mod))
+(display (modulo (* 250000002 (+ a1 a2 a3 a3)) mod))
+(newline)
