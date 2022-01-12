@@ -13,13 +13,8 @@ struct element_t
 struct node_t
 {
   struct element_t e[5];
-  int assign;
+  int              assign;
 };
-
-void node_log(struct node_t p)
-{
-  // printf("{ (%d, %d), (%d, %d), (%d, %d), (%d, %d), (%d, %d) }\n", p.e[0].value, p.e[0].rank, p.e[1].value, p.e[1].rank, p.e[2].value, p.e[2].rank, p.e[3].value, p.e[3].rank, p.e[4].value, p.e[4].rank);
-}
 
 void node_el_insert(struct node_t *t, struct element_t e)
 {
@@ -43,7 +38,7 @@ void node_el_insert(struct node_t *t, struct element_t e)
   int dec;
   if (e.rank > t->e[min_id].rank)
   {
-    dec = t->e[min_id].rank;
+    dec          = t->e[min_id].rank;
     t->e[min_id] = e;
   }
   else
@@ -56,12 +51,9 @@ void node_el_insert(struct node_t *t, struct element_t e)
 
 struct node_t push_up(struct node_t l, struct node_t r)
 {
-  node_log(l);
-  node_log(r);
   for (int i = 0; i < limit; i++)
     if (r.e[i].value != 0)
       node_el_insert(&l, r.e[i]);
-  node_log(l);
   l.assign = 0;
   return l;
 }
@@ -71,17 +63,18 @@ struct node_t make_node(int value, int len)
   struct node_t res;
   memset(&res, 0, sizeof(res));
   res.e[0].value = value;
-  res.e[0].rank = len;
+  res.e[0].rank  = len;
   return res;
 }
 
-void push_down(struct node_t *u, struct node_t *l, struct node_t *r, int ll, int lr)
+void push_down(
+    struct node_t *u, struct node_t *l, struct node_t *r, int ll, int lr)
 {
   if (u->assign)
   {
-    *l = make_node(u->assign, ll);
+    *l        = make_node(u->assign, ll);
     l->assign = u->assign;
-    *r = make_node(u->assign, lr);
+    *r        = make_node(u->assign, lr);
     r->assign = u->assign;
     u->assign = 0;
   }
@@ -91,7 +84,7 @@ struct node_t p[N * 4];
 
 void init(int u, int l, int r, int *a)
 {
-  if (r - l == 1) 
+  if (r - l == 1)
   {
     p[u] = make_node(a[l], 1);
   }
@@ -109,14 +102,14 @@ void modify(int u, int l, int r, int ml, int mr, int value)
 {
   if (ml <= l && r <= mr)
   {
-    p[u] = make_node(value, r - l);
+    p[u]        = make_node(value, r - l);
     p[u].assign = value;
   }
   else
   {
     int mid = (l + r) / 2;
     push_down(&p[u], &p[u + u], &p[u + u + 1], mid - l, r - mid);
-    if (ml < mid) 
+    if (ml < mid)
       modify(u + u, l, mid, ml, mr, value);
     if (mr > mid)
       modify(u + u + 1, mid, r, ml, mr, value);
@@ -140,7 +133,6 @@ struct node_t query(int u, int l, int r, int ql, int qr)
   struct node_t rr = query(u + u + 1, mid, r, ql, qr);
   // printf("at %d\n", u);
   return push_up(rl, rr);
-                 
 }
 
 int a[N];
@@ -154,7 +146,7 @@ int main()
     scanf("%d", &a[i]);
   init(1, 0, n, a);
 
-  while (m --> 0)
+  while (m-- > 0)
   {
     int opt, l, r;
     scanf("%d%d%d", &opt, &l, &r);
@@ -168,7 +160,7 @@ int main()
     else
     {
       struct node_t res = query(1, 0, n, l, r);
-      int cnt = 0;
+      int           cnt = 0;
       for (int i = 0; i < limit; i++)
         cnt += res.e[i].value != 0;
       printf("%d ", cnt);
