@@ -5,7 +5,7 @@ struct trace_dsu
 {
   int  p[N];
   int  s[N];
-  std::stack<std::pair<int, int>> trace;
+  std::stack<int> trace;
 
   trace_dsu()
   {
@@ -18,13 +18,13 @@ struct trace_dsu
 
   void backtrace()
   {
-    int k, v;
-    std::tie(k, v) = trace.top();
+    int v = trace.top();
     trace.pop();
-    s[k] = v;
-    std::tie(k, v) = trace.top();
-    trace.pop();
-    p[k] = v;
+    if (v != -1)
+    {
+      s[p[v]] -= s[v];
+      p[v] = v;
+    }
   }
 
   int get(int u)
@@ -38,16 +38,14 @@ struct trace_dsu
     v = get(v);
     if (u == v)
     {
-      trace.emplace(N - 1, 0);
-      trace.emplace(N - 1, 0);
+      trace.push(-1);
       return false;
     }
     else
     {
       if (s[u] < s[v])
         std::swap(u, v);
-      trace.emplace(v, p[v]);
-      trace.emplace(u, s[u]);
+      trace.push(v);
       p[v] = u;
       s[u] = s[u] + s[v];
       return true;
@@ -104,8 +102,13 @@ struct query_t
     // printf("pu0 = %d, pv0 = %d\n", pu0, pv0);
     if (pu0 == pv0)
     {
-      goal->success = false;
-      goal->c = goal->last ? goal->last->c : -1;
+      if (goal->last && goal->last->c == goal->c)
+        goal->success = true;
+      else
+      {
+        goal->success = false;
+        goal->c = goal->last ? goal->last->c : -1;
+      }
     }
     else 
     { 
@@ -120,7 +123,7 @@ struct sgt_node_t
   std::vector<query_t> queries;
 };
 
-sgt_node_t p[N * 4];
+sgt_node_t p[N * 2];
 
 void sgt_insert(int u, int l, int r, int ml, int mr, auto f)
 {
@@ -192,29 +195,29 @@ int main()
     modifies[i].v = v[e[i]];    
     modifies[i].c = c[i];
     modifies[i].last = last_modify[e[i]];
-    modifies[i].l = i * 2;
+    modifies[i].l = i;
     modifies[i].r = -1;
     if (modifies[i].last)
-      modifies[i].last->r = i * 2 - 1;
+      modifies[i].last->r = i;
     last_modify[e[i]] = &modifies[i];
   }
   for (int i = 0; i < q; i++)
     if (modifies[i].r == -1)
-      modifies[i].r = q * 2 - 1;
+      modifies[i].r = q;
 
   for (int i = 0; i < q; i++)
   {
     auto &cur = modifies[i];
     // printf("add modify: [%d, %d) %d %d -> %d\n", cur.l, cur.r, cur.u, cur.v, cur.c);
-    sgt_insert(0, -1, q * 2, cur.l, cur.r, [&](sgt_node_t &p) {
+    sgt_insert(0, -1, q, cur.l, cur.r, [&](sgt_node_t &p) {
       p.modifies.push_back(&cur);
     });
-    sgt_insert(0, -1, q * 2, cur.l - 1, cur.l, [&](sgt_node_t &p) {
+    sgt_insert(0, -1, q, cur.l - 1, cur.l, [&](sgt_node_t &p) {
       p.queries.push_back({&cur});
     });
   }
 
-  sgt_apply(0, -1, q * 2);
+  sgt_apply(0, -1, q);
 
   for (int i = 0; i < q; i++)
     puts(modifies[i].success ? "YES" : "NO");
