@@ -219,6 +219,19 @@ std::unique_ptr<node_t> dfs_get_sgt(int u, int f, int d, int key)
 
 int ans[N];
 
+int size[N];
+void dfs_make_wson(int u, int f)
+{
+  size[u] = 1;
+  for (int &v : e[u]) if (v != f)
+  {
+    dfs_make_wson(v, u);
+    size[u] += size[v];
+    if (size[v] > size[e[u][0]])
+      std::swap(e[u][0], v);
+  }
+}
+
 int main()
 {
   scanf("%d%d%d", &n, &l, &r);
@@ -229,6 +242,7 @@ int main()
     e[u].push_back(v);
     e[v].push_back(u);
   }
+  dfs_make_wson(1, 0);
 
   int key = dfs_calc(1, 0, 1);
   auto t = dfs_get_sgt(1, 0, 1, key);
