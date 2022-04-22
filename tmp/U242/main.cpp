@@ -1,217 +1,160 @@
 #include <bits/stdc++.h>
 
-const int N = 100005;
-
-int n;
-
-struct angle_t
+int64_t operator""_64(unsigned long long x)
 {
-  int x, y;
-  angle_t(int x = 0, int y = 0) : x(x), y(y) {}
-
-  angle_t reverse()
-  {
-    return {-x, -y};
-  }
-
-  int64_t operator*(const angle_t &rhs) const
-  {
-    return (int64_t)x * rhs.y - (int64_t)y * rhs.x;
-  }
-
-  bool neg() const
-  {
-    return y < 0 || (y == 0 && x < 0);
-  }
-
-  bool operator<(const angle_t &rhs) const
-  {
-    if (neg() != rhs.neg())
-      return neg() > rhs.neg();
-    return *this * rhs > 0;
-  }
-
-  bool operator==(const angle_t &rhs) const
-  {
-    return x == rhs.x && y == rhs.y;
-  }
-};
-
-angle_t a[N];
-
-angle_t make_angle(const int &x, const int &y)
-{
-  int g = std::gcd(x, y);
-  if (g < 0)
-    return {-x / g, -y / g};
-  else
-    return {x / g, y / g};
+  return static_cast<int64_t>(x);
 }
 
 struct point_t
 {
-  double x, y;
-  point_t(double x = 0, double y = 0) : x(x), y(y) {}
+  int x, y;
+  explicit point_t(int x = 0, int y = 0) : x(x), y(y) {}
+};
 
-  bool operator<(const point_t &rhs) const
+struct vector_t
+{
+  int x, y;
+  explicit vector_t(int x = 0, int y = 0) : x(x), y(y) {}
+  vector_t(point_t a, point_t b) : x(b.x - a.x), y(b.y - a.y) {}
+};
+
+struct frac_t
+{
+  int64_t a, b;
+  frac_t(int64_t a = 0, int64_t b = 1) : a(a), b(b) {}
+
+  bool operator<(frac_t rhs) const
   {
-    return x == rhs.x ? y < rhs.y : x < rhs.x;
+    return __int128_t(a) * rhs.b < __int128_t(rhs.a) * b;
   }
 
-  point_t operator+(const point_t &rhs) const
+  frac_t operator-() const
   {
-    return {x + rhs.x, y + rhs.y};
-  }
-
-  point_t operator-(const point_t &rhs) const
-  {
-    return {x - rhs.x, y - rhs.y};
-  }
-
-  point_t operator*(const double &rhs) const
-  {
-    return {x * rhs, y * rhs};
-  }
-
-  double operator*(const point_t &rhs) const
-  {
-    return x * rhs.y - y * rhs.x;
-  }
-
-  point_t reverse() const
-  {
-    return {-x, -y};
+    return {-a, b};
   }
 };
 
-struct line
+int64_t dot(vector_t a, vector_t b)
 {
-  point_t p, v;
-  line() = default;
-  line(const point_t &a, const point_t &b) : p(a), v(b - a) {}
-
-  line reverse()
-  {
-    return {p + v, p};
-  }
-};
-
-line s[N], l;
-
-point_t cross(const line &a, const line &b)
-{
-  return b.p + b.v * ((b.p - a.p) * a.v / (a.v * b.v));
+  return 1_64 * a.x * b.x + 1_64 * a.y * b.y;
 }
 
-std::vector<std::pair<point_t, int>> ins;
-std::multiset<angle_t>               ss;
-int                                  s_cnt;
-
-int check(angle_t a, angle_t b, int flag = 0)
+int64_t cross(vector_t a, vector_t b)
 {
-  if (a == b)
-    return flag;
-  else if (a.reverse() == b)
-    return 1;
-  else
-    return a * b < 0;
+  return 1_64 * a.x * b.y - 1_64 * a.y * b.x;
 }
 
-void ss_insert(const angle_t &c)
+frac_t cross_dis(point_t aa, point_t ab, point_t b, vector_t vb)
 {
-  std::multiset<angle_t>::iterator pre, nex, it;
-
-  bool fpre = false, fnex = false;
-  pre = nex = it = ss.insert(c);
-  if (pre == ss.begin())
-  {
-    pre  = std::prev(ss.end());
-    fpre = true;
-  }
-  else
-    pre--;
-
-  if (++nex == ss.end())
-  {
-    nex  = ss.begin();
-    fnex = true;
-  }
-  s_cnt += check(*pre, *it, fpre) + check(*it, *nex, fnex) -
-           check(*pre, *nex, fpre || fnex);
+  int64_t ra = cross({b, aa}, vb);
+  int64_t rb = cross(vb, {b, ab});
+  return {ra, ra + rb};
 }
 
-void ss_erase(const angle_t &c)
+std::ostream& operator<<(std::ostream &out, frac_t f)
 {
-  std::multiset<angle_t>::iterator pre, nex, it;
-
-  bool fpre = false, fnex = false;
-  pre = nex = it = ss.find(c);
-  if (pre == ss.begin())
-  {
-    pre  = std::prev(ss.end());
-    fpre = true;
-  }
-  else
-    pre--;
-
-  if (++nex == ss.end())
-  {
-    nex  = ss.begin();
-    fnex = true;
-  }
-  s_cnt += check(*pre, *nex, fpre || fnex) - check(*pre, *it, fpre) -
-           check(*it, *nex, fnex);
-
-  ss.erase(it);
+  return out << f.a << "/" << f.b;
+  // return out << 1.0 * f.a / f.b;
 }
 
-void init()
+template <class T, typename = typename T::iterator>
+std::ostream &operator<<(std::ostream &out, const T &v)
 {
-  scanf("%d", &n);
-  for (int i = 0; i <= n; i++)
+  out << "{";
+  bool is_first = true;
+  for (const auto &x : v)
   {
-    int x1, y1, x2, y2;
-    scanf("%d%d%d%d", &x1, &y1, &x2, &y2);
-    s[i] = line(point_t(x1, y1), point_t(x2, y2));
-    a[i] = make_angle(x2 - x1, y2 - y1);
+    if (!is_first) out << ", ";
+    else is_first = false;
+    out << x;
   }
-  std::swap(s[n], l);
+  out << "}";
+  return out;
+}
 
-  for (int i = 0; i < n; i++)
+const int N = 100005;
+
+point_t a[N], b[N];
+int n;
+
+std::vector<int> check(const std::vector<int> &v)
+{
+  // std::cout << "check: v = " << v << std::endl;
+  std::vector<int> res(v.size());
+  std::vector<std::pair<int, size_t>> st;
+  for (size_t i = 0; i < v.size(); i++)
   {
-    if (l.v * s[i].v < 0)
+    if (st.empty() || st.back().first < v[i])
+      st.emplace_back(v[i], i);
+    else
     {
-      s[i] = s[i].reverse();
-      a[i] = a[i].reverse();
+      auto l = std::upper_bound(st.begin(), st.end(), std::make_pair(v[i], i));
+      if (l != st.end())
+      {
+        res[l->second]++;
+        res[i]--;
+      }
     }
-    ins.emplace_back(cross(s[i], l), i);
-    ss_insert(a[i]);
   }
-
-  std::sort(ins.begin(), ins.end());
-  std::multiset<angle_t>::iterator it0, it1;
-  s_cnt = check(*ss.rbegin(), *ss.begin(), true);
-  for (it0 = ss.begin(), it1 = std::next(it0); it1 != ss.end(); it0++, it1++)
-    s_cnt += check(*it0, *it1);
-}
-
-void solve()
-{
-  for (auto &in : ins)
-  {
-    putchar(s_cnt == 0 ? '1' : '0');
-    int k = in.second;
-    ss_erase(a[k]);
-    a[k] = a[k].reverse();
-    ss_insert(a[k]);
-  }
-  putchar(s_cnt == 0 ? '1' : '0');
-  puts("");
+  std::partial_sum(res.begin(), res.end(), res.begin());
+  // std::cout << res << std::endl;
+  return res;
 }
 
 int main()
 {
-  init();
-  solve();
+  scanf("%d", &n);
+  for (int i = 0; i <= n; i++)
+  {
+    scanf("%d%d", &a[i].x, &a[i].y);
+    scanf("%d%d", &b[i].x, &b[i].y);
+  }
+  point_t sa = a[n], sb = b[n];
+  vector_t s(sa, sb);
+
+  auto ang_cmp = [](vector_t a, vector_t b) {
+    return cross(a, b) < 0;
+  };
+  auto ang_eq = [](vector_t a, vector_t b) {
+    return cross(a, b) == 0;
+  };
+  std::vector<vector_t> vs;
+
+  for (int i = 0; i < n; i++)
+  {
+    if (cross(s, {a[i], b[i]}) < 0)
+      std::swap(a[i], b[i]);
+    vs.emplace_back(a[i], b[i]);
+  }
+  std::sort(vs.begin(), vs.end(), ang_cmp);
+  vs.erase(std::unique(vs.begin(), vs.end(), ang_eq), vs.end());
+
+  std::vector<std::pair<frac_t, int>> v;
+  for (int i = 0; i < n; i++)
+  {
+    frac_t d = cross_dis(sa, sb, a[i], {a[i], b[i]});
+    int r = static_cast<int>(std::lower_bound(vs.begin(), vs.end(), vector_t(a[i], b[i]), ang_cmp) - vs.begin());
+    v.emplace_back(d, r);
+  }
+  std::sort(v.begin(), v.end());
+
+  auto a0 = [&]{
+    std::vector<int> f;
+    for (int i = 0; i < n; i++)
+      f.push_back(v[i].second);
+    return check(f);
+  }();
+  auto a1 = [&]{
+    std::vector<int> f;
+    for (int i = 0; i < n; i++)
+      f.push_back(-v[i].second);
+    return check(f);
+  }();
+
+  putchar('0');
+  for (int i = 0; i < n; i++)
+    putchar((a0[i] && a1[i]) ? '1' : '0');
+  puts("");
+
   return 0;
 }
