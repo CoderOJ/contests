@@ -7,44 +7,43 @@
 
 cm::scanner<cm::optimal_reader> sc(stdin);
 
-const int N = 105;
-bool      mp[N * 2][N * 2];
-
-void set_pixel_to_black(int x, int y)
+bool check_on(int64_t r, int64_t x)
 {
-  mp[N + x][N + y] = true;
+  return round(sqrt(r * r - x * x)) == x;
 }
 
-void draw_circle_perimeter(int r)
+int64_t calc(int64_t n)
 {
-  for (int x = -r; x <= r; x++)
-  {
-    int y = static_cast<int>(round(sqrt(r * r - x * x)));
-    set_pixel_to_black(x, y);
-    set_pixel_to_black(x, -y);
-    set_pixel_to_black(y, x);
-    set_pixel_to_black(-y, x);
-  }
+  int64_t bx = static_cast<int64_t>(n / sqrt(2));
+  int64_t res = (int64_t)(bx + 1) * 8 - 4;
+  if (check_on(n, bx)) 
+    res -= 4;
+  if (check_on(n, bx + 1)) 
+    res += 4;
+  return res;
 }
 
 int main()
 {
-  for (int i = 0; i < N; i++)
-    draw_circle_perimeter(i);
-
   int t = sc.next_int();
   for (int i = 0; i < t; i++)
   {
     printf("Case #%d: ", i + 1);
 
-    int n = sc.next_int();
-    int ans = 0;
-    for (int i = -n; i <= n; i++)
-      for (int j = -n; j <= n; j++)
-        if (round(sqrt(i * i + j * j)) <= n)
-          if (!mp[N + i][N + j])
-            ans += 1;
-    printf("%d\n", ans);
+    int64_t n = sc.next_int();
+
+    int64_t ans0 = 0;
+    for (int64_t i = -n; i <= n; i++)
+    {
+      int64_t c = int64_t(floor(sqrt((n + 0.5) * (n + 0.5) - i * i)));
+      ans0 += c * 2 + 1;
+    }
+
+    int64_t ans1 = 1;
+    for (int64_t i = 1; i <= n; i++)
+      ans1 += calc(i);
+
+    std::cout << ans0 - ans1 << std::endl;
   }
   return 0;
 }
