@@ -151,18 +151,17 @@ int main()
     return g;
   };
 
-  using cm::pipe::operator|;
+  auto ans = cm::transfer(
+      cm::vec_map(std::plus<>(), dp_chain, dp_circle),
 
-  auto ans = cm::vec_map(std::plus<>(), dp_chain, dp_circle) //
-           | fractionalize                                   //
-           | cm::mapper(fwt)                                 //
-           | cm::vec_transpose<int_t>                        //
-           | cm::mapper(exp)                                 //
-           | cm::vec_transpose<int_t>                        //
-           | cm::mapper(ifwt)                                //
-           | gather                                          //
-           | cm::vec_take((1 << hn) - 1)                     //
-      ;
+      fractionalize,
+      cm::mapper(fwt),
+      cm::vec_transpose<int_t>,
+      cm::mapper(exp),
+      cm::vec_transpose<int_t>,
+      cm::mapper(ifwt),
+      gather,
+      cm::vec_take((1 << hn) - 1));
 
   std::cout << ans << std::endl;
 
